@@ -1,0 +1,9 @@
+{
+  "name": "snip-backend",
+  "version": "0.1.0",
+  "type": "module",
+  "engines": { "bun": ">=1.0.0" },
+  "scripts": {
+    "start": "bun run server.js"
+  }
+}
