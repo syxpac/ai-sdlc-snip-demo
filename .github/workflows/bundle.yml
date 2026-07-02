@@ -1,0 +1,42 @@
+name: Build bundle
+
+# ── Why there is no push trigger ──────────────────────────────────────────────
+# GitHub executes push-triggered workflows from the workflow file on the PUSHED
+# branch.  This file lives only on `main`, so a push trigger would fire only
+# when main itself is pushed — never when backend, frontend, or cli branches are
+# updated.  The hourly schedule picks up any source-branch advance automatically;
+# use workflow_dispatch for on-demand rebuilds.
+# ──────────────────────────────────────────────────────────────────────────────
+
+on:
+  schedule:
+    - cron: '0 * * * *'    # every hour, on the hour
+  workflow_dispatch:
+
+permissions:
+  contents: write           # script pushes bundle branch + main pointer bump
+
+jobs:
+  build-bundle:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout main (all submodules, full history)
+        uses: actions/checkout@v4
+        with:
+          ref: main
+          submodules: true
+          fetch-depth: 0
+
+      - name: Set up Node 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Configure git identity (github-actions bot)
+        run: |
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git config --global user.name  "github-actions[bot]"
+
+      - name: Build and push bundle
+        run: node scripts/build-bundle.mjs --push
