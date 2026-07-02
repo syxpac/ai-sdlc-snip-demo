@@ -5,9 +5,10 @@ own orphan branch and mounted here as a Git submodule.
 
 ```
 ai-sdlc-snip-demo (main)
-├── backend/    ← Bun server   (branch: backend)
-├── frontend/   ← Angular 19   (branch: frontend)
-└── cli/        ← Node.js CLI  (branch: cli)
+├── backend/    ← Bun server        (branch: backend)
+├── frontend/   ← Angular 19        (branch: frontend)
+├── cli/        ← Node.js CLI       (branch: cli)
+└── bundle/     ← generated output  (branch: bundle)  ⚠ do not hand-edit
 ```
 
 ---
@@ -110,6 +111,28 @@ Override the backend URL:
 ```sh
 SNIP_API=http://localhost:8080 node cli/cli.js ls
 ```
+
+---
+
+## Bundle — generated deployment output
+
+The `bundle` branch is assembled by a script — **never edit it by hand**.
+
+```sh
+node scripts/build-bundle.mjs          # build locally (no push)
+node scripts/build-bundle.mjs --push   # build + push bundle + main
+```
+
+What the script does:
+1. Pulls `backend`, `frontend`, `cli` to their latest branch tips
+2. Runs an Angular production build (`npm install --ignore-scripts && npm run build`)
+3. Copies `server.js`, `cli.js`, and the built SPA (`public/`) into `bundle/`
+4. Writes `bundle/.env` (`PUBLIC_DIR=./public` — enables static serving in Bun),
+   `bundle/package.json`, `bundle/Dockerfile` (`FROM oven/bun:1-alpine`),
+   `bundle/.dockerignore`, and `bundle/railway.json` (DOCKERFILE builder)
+5. Commits inside the `bundle` submodule and bumps the pointer in this repo
+
+Safe to re-run: commits are skipped when nothing has changed.
 
 ---
 
