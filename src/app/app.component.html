@@ -1,40 +1,42 @@
 <main>
-  <h1>Snip</h1>
 
-  <!-- ── Shorten form ──────────────────────────────────────────────── -->
-  <section class="card">
-    <h2>Shorten a URL</h2>
+  <!-- ── Hero ──────────────────────────────────────────────────────── -->
+  <div class="hero">
+    <div class="hero-glow"></div>
+    <h1>Snip</h1>
+    <p class="hero-sub">Paste a long URL, get a short one.</p>
 
-    <form class="url-form" (ngSubmit)="submit()">
+    <form class="shorten-form" (ngSubmit)="submit()">
       <input
         type="url"
         name="url"
-        placeholder="https://example.com/long/path"
+        class="url-input"
+        placeholder="Paste any URL…"
         [ngModel]="urlInput()"
         (ngModelChange)="urlInput.set($event)"
         [disabled]="submitting()"
         required
       />
-      <button type="submit" [disabled]="submitting()">
-        {{ submitting() ? 'Shortening…' : 'Shorten' }}
+      <button type="submit" class="shorten-btn" [disabled]="submitting()">
+        {{ submitting() ? '…' : 'Shorten' }}
       </button>
     </form>
 
     @if (error()) {
-      <p class="msg error">{{ error() }}</p>
+      <p class="notice notice-error">{{ error() }}</p>
     }
 
     @if (newLink(); as link) {
-      <p class="msg success">
-        Short link:&nbsp;
+      <p class="notice notice-success">
+        Your short link:&nbsp;
         <a [href]="link.shortUrl" target="_blank" rel="noopener">{{ link.shortUrl }}</a>
       </p>
     }
-  </section>
+  </div>
 
-  <!-- ── Links table ──────────────────────────────────────────────── -->
-  <section class="card">
-    <h2>All links</h2>
+  <!-- ── Links card ────────────────────────────────────────────────── -->
+  <section class="links-card">
+    <h2 class="section-label">All links</h2>
 
     @if (links().length === 0) {
       <p class="empty">No links yet.</p>
@@ -52,7 +54,7 @@
           @for (link of links(); track link.code) {
             <tr>
               <td>
-                <a [href]="link.shortUrl" target="_blank" rel="noopener">{{ link.code }}</a>
+                <a [href]="link.shortUrl" target="_blank" rel="noopener" class="code-link">{{ link.code }}</a>
               </td>
               <td class="original">
                 <a [href]="link.url" target="_blank" rel="noopener">{{ link.url }}</a>
