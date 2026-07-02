@@ -1,0 +1,69 @@
+<main>
+  <h1>Snip</h1>
+
+  <!-- ── Shorten form ──────────────────────────────────────────────── -->
+  <section class="card">
+    <h2>Shorten a URL</h2>
+
+    <form class="url-form" (ngSubmit)="submit()">
+      <input
+        type="url"
+        name="url"
+        placeholder="https://example.com/long/path"
+        [ngModel]="urlInput()"
+        (ngModelChange)="urlInput.set($event)"
+        [disabled]="submitting()"
+        required
+      />
+      <button type="submit" [disabled]="submitting()">
+        {{ submitting() ? 'Shortening…' : 'Shorten' }}
+      </button>
+    </form>
+
+    @if (error()) {
+      <p class="msg error">{{ error() }}</p>
+    }
+
+    @if (newLink(); as link) {
+      <p class="msg success">
+        Short link:&nbsp;
+        <a [href]="link.shortUrl" target="_blank" rel="noopener">{{ link.shortUrl }}</a>
+      </p>
+    }
+  </section>
+
+  <!-- ── Links table ──────────────────────────────────────────────── -->
+  <section class="card">
+    <h2>All links</h2>
+
+    @if (links().length === 0) {
+      <p class="empty">No links yet.</p>
+    } @else {
+      <table>
+        <thead>
+          <tr>
+            <th>Code</th>
+            <th>Original URL</th>
+            <th>Hits</th>
+            <th>Created</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (link of links(); track link.code) {
+            <tr>
+              <td>
+                <a [href]="link.shortUrl" target="_blank" rel="noopener">{{ link.code }}</a>
+              </td>
+              <td class="original">
+                <a [href]="link.url" target="_blank" rel="noopener">{{ link.url }}</a>
+              </td>
+              <td class="hits">{{ link.hits }}</td>
+              <td class="date">{{ link.createdAt | date:'short' }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    }
+  </section>
+</main>
+
