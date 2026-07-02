@@ -1,0 +1,4 @@
+#!/usr/bin/env sh
+set -e
+dir="$(cd "$(dirname "$0")" && pwd)"
+exec node "$dir/cli.js" "$@"
